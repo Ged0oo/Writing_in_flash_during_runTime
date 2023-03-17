@@ -1,0 +1,10 @@
+arm-none-eabi-gcc -c -mcpu=cortex-m3 -mthumb file1.c -o file1.o
+arm-none-eabi-gcc -c -mcpu=cortex-m3 -mthumb file2.c -o file2.o
+
+arm-none-eabi-objdump -t file1.o
+arm-none-eabi-objdump -t file2.o
+
+arm-none-eabi-ld file1.o -o app.o
+arm-none-eabi-ld file1.o file2.o -o app.o
+
+
