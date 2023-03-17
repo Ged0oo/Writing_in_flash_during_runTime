@@ -1,0 +1,107 @@
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+CCMRAM           0x10000000         0x00010000         xrw
+RAM              0x20000000         0x00020000         xrw
+FLASH            0x08000000         0x00100000         xr
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+                0x20020000                _estack = (ORIGIN (RAM) + LENGTH (RAM))
+                0x00000200                _Min_Heap_Size = 0x200
+                0x00000400                _Min_Stack_Size = 0x400
+
+.text           0x08000000       0x8c
+                0x08000000                . = ALIGN (0x4)
+ *(.text)
+ .text          0x08000000       0x48 file1.o
+                0x08000000                fun1
+ .text          0x08000048       0x44 file2.o
+                0x08000048                fun2
+ *(.text*)
+                0x0800008c                . = ALIGN (0x4)
+                0x0800008c                _etext = .
+
+.glue_7         0x0800008c        0x0
+ .glue_7        0x0800008c        0x0 linker stubs
+
+.glue_7t        0x0800008c        0x0
+ .glue_7t       0x0800008c        0x0 linker stubs
+
+.vfp11_veneer   0x0800008c        0x0
+ .vfp11_veneer  0x0800008c        0x0 linker stubs
+
+.v4_bx          0x0800008c        0x0
+ .v4_bx         0x0800008c        0x0 linker stubs
+
+.iplt           0x0800008c        0x0
+ .iplt          0x0800008c        0x0 file1.o
+
+.rodata         0x0800008c        0x4
+                0x0800008c                . = ALIGN (0x4)
+ *(.rodata)
+ .rodata        0x0800008c        0x4 file1.o
+                0x0800008c                var11
+ *(.rodata*)
+                0x08000090                . = ALIGN (0x4)
+
+.rel.dyn        0x08000090        0x0
+ .rel.iplt      0x08000090        0x0 file1.o
+
+.data           0x20000000       0x10 load address 0x08000090
+                0x20000000                . = ALIGN (0x4)
+                0x20000000                _sdata = .
+ *(.data)
+ .data          0x20000000        0x6 file1.o
+                0x20000000                var1
+                0x20000004                var2
+ *fill*         0x20000006        0x2 
+ .data          0x20000008        0x8 file2.o
+                0x20000008                var5
+                0x2000000c                var6
+ *(.data*)
+                0x20000010                . = ALIGN (0x4)
+                0x20000010                _edata = .
+
+.igot.plt       0x20000010        0x0 load address 0x080000a0
+ .igot.plt      0x20000010        0x0 file1.o
+
+.bss            0x20000010       0x10 load address 0x080000a0
+                0x20000010                _sbss = .
+ *(.bss)
+ .bss           0x20000010        0x8 file1.o
+                0x20000010                var3
+                0x20000014                var4
+ .bss           0x20000018        0x8 file2.o
+                0x20000018                var7
+                0x2000001c                var8
+ *(.bss*)
+                0x20000020                . = ALIGN (0x4)
+                0x20000020                _ebss = .
+
+._user_heap_stack
+                0x20000020      0x600 load address 0x080000a0
+                0x20000020                . = ALIGN (0x8)
+                0x20000220                . = (. + _Min_Heap_Size)
+ *fill*         0x20000020      0x200 
+                0x20000620                . = (. + _Min_Stack_Size)
+ *fill*         0x20000220      0x400 
+                0x20000620                . = ALIGN (0x8)
+LOAD file1.o
+LOAD file2.o
+OUTPUT(application.elf elf32-littlearm)
+LOAD linker stubs
+
+.comment        0x00000000       0x4d
+ .comment       0x00000000       0x4d file1.o
+                                 0x4e (size before relaxing)
+ .comment       0x0000004d       0x4e file2.o
+
+.ARM.attributes
+                0x00000000       0x2e
+ .ARM.attributes
+                0x00000000       0x2e file1.o
+ .ARM.attributes
+                0x0000002e       0x2e file2.o
