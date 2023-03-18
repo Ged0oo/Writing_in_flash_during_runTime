@@ -1,0 +1,84 @@
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+CCMRAM           0x10000000         0x00010000         xrw
+RAM              0x20000000         0x00020000         xrw
+FLASH            0x08000000         0x00100000         xr
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD file1.o
+
+.text           0x08000000       0x1c
+                0x08000000                _textStart = .
+                0x08000000                . = ALIGN (0x4)
+ *(.text)
+ .text          0x08000000       0x1c file1.o
+                0x08000000                main
+ *(.text*)
+                0x0800001c                . = ALIGN (0x4)
+                0x0800001c                _textEnd = .
+
+.glue_7         0x0800001c        0x0
+ .glue_7        0x0800001c        0x0 linker stubs
+
+.glue_7t        0x0800001c        0x0
+ .glue_7t       0x0800001c        0x0 linker stubs
+
+.vfp11_veneer   0x0800001c        0x0
+ .vfp11_veneer  0x0800001c        0x0 linker stubs
+
+.v4_bx          0x0800001c        0x0
+ .v4_bx         0x0800001c        0x0 linker stubs
+
+.iplt           0x0800001c        0x0
+ .iplt          0x0800001c        0x0 file1.o
+
+.rel.dyn        0x0800001c        0x0
+ .rel.iplt      0x0800001c        0x0 file1.o
+
+.rodata         0x0800001c        0x0
+                0x0800001c                _rodatatStart = .
+                0x0800001c                . = ALIGN (0x4)
+ *(.rodata)
+ *(.rodata*)
+                0x0800001c                . = ALIGN (0x4)
+                0x0800001c                _rodatatEnd = .
+
+.data           0x20000000        0x0 load address 0x0800001c
+                0x20000000                _datatStart = .
+                0x20000000                . = ALIGN (0x4)
+ *(.data)
+ .data          0x20000000        0x0 file1.o
+ *(.data*)
+                0x20000000                . = ALIGN (0x4)
+                0x20000000                _datatStart = .
+
+.nagy           0x20000000        0x4 load address 0x0800001c
+ .nagy          0x20000000        0x4 file1.o
+                0x20000000                testVar
+
+.igot.plt       0x20000004        0x0 load address 0x08000020
+ .igot.plt      0x20000004        0x0 file1.o
+
+.bss            0x20000004        0x0 load address 0x08000020
+                0x20000004                _bssStart = .
+                0x20000004                . = ALIGN (0x4)
+ *(.bss)
+ .bss           0x20000004        0x0 file1.o
+ *(.bss*)
+                0x20000004                . = ALIGN (0x4)
+                0x20000004                _bssEnd = .
+OUTPUT(a.out elf32-littlearm)
+LOAD linker stubs
+
+.comment        0x00000000       0x4d
+ .comment       0x00000000       0x4d file1.o
+                                 0x4e (size before relaxing)
+
+.ARM.attributes
+                0x00000000       0x2d
+ .ARM.attributes
+                0x00000000       0x2d file1.o
